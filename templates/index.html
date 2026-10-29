@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CodeAlpha FAQ Chatbot</title>
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 20px;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: Arial, sans-serif;
+        color: #1f2937;
+        background: linear-gradient(135deg, #edf2ff, #f8faff);
+      }
+
+      .chat-container {
+        width: 100%;
+        max-width: 720px;
+        height: 82vh;
+        min-height: 480px;
+        max-height: 720px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        background: white;
+        border-radius: 18px;
+        box-shadow: 0 12px 40px rgba(30, 50, 90, 0.12);
+      }
+
+      .header {
+        padding: 24px;
+        text-align: center;
+        color: white;
+        background: #243b80;
+      }
+
+      .header h1 {
+        margin: 0 0 8px;
+        font-size: 25px;
+      }
+
+      .header p {
+        margin: 0;
+        color: #e0e7ff;
+        font-size: 14px;
+      }
+
+      .status {
+        margin-top: 12px;
+        color: #d1fae5;
+        font-size: 12px;
+      }
+
+      .suggestions {
+        padding: 14px 18px;
+        background: #fafbff;
+        border-bottom: 1px solid #e5e7eb;
+      }
+
+      .suggestions p {
+        margin: 0 0 10px;
+        color: #64748b;
+        font-size: 12px;
+      }
+
+      .suggestion-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .suggestion-buttons button {
+        padding: 8px 12px;
+        border: 1px solid #d8def0;
+        border-radius: 20px;
+        background: white;
+        color: #243b80;
+        cursor: pointer;
+      }
+
+      .suggestion-buttons button:hover {
+        background: #edf2ff;
+      }
+
+      .chat-toolbar {
+        display: flex;
+        justify-content: flex-end;
+        padding: 10px 16px 0;
+      }
+
+      #clear-chat {
+        padding: 7px 12px;
+        border: 1px solid #d8def0;
+        border-radius: 8px;
+        background: white;
+        color: #243b80;
+        cursor: pointer;
+      }
+
+      #clear-chat:hover {
+        background: #edf2ff;
+      }
+
+      #chat-box {
+        flex: 1;
+        min-height: 0;
+        padding: 16px 20px;
+        overflow-y: auto;
+      }
+
+      .welcome {
+        padding: 20px 10px;
+        text-align: center;
+        color: #64748b;
+        line-height: 1.7;
+      }
+
+      .message {
+        max-width: 88%;
+        margin-bottom: 16px;
+        padding: 12px 15px;
+        border-radius: 12px;
+        line-height: 1.5;
+        overflow-wrap: anywhere;
+      }
+
+      .user-message {
+        margin-left: auto;
+        color: white;
+        background: #243b80;
+        border-bottom-right-radius: 3px;
+      }
+
+      .bot-message {
+        margin-right: auto;
+        color: #26334d;
+        background: #f0f3fa;
+        border-bottom-left-radius: 3px;
+      }
+
+      .message-label {
+        display: block;
+        margin-bottom: 5px;
+        font-size: 11px;
+        font-weight: bold;
+        opacity: 0.8;
+      }
+
+      .input-area {
+        display: flex;
+        gap: 10px;
+        padding: 16px;
+        border-top: 1px solid #e5e7eb;
+        background: #fafbff;
+      }
+
+      #question {
+        flex: 1;
+        min-width: 0;
+        padding: 13px 15px;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        outline: none;
+        font-size: 14px;
+      }
+
+      #question:focus {
+        border-color: #243b80;
+      }
+
+      #send-button {
+        padding: 0 22px;
+        border: none;
+        border-radius: 10px;
+        color: white;
+        background: #243b80;
+        font-weight: bold;
+        cursor: pointer;
+      }
+
+      #send-button:disabled {
+        opacity: 0.6;
+        cursor: wait;
+      }
+
+      .footer {
+        padding: 10px;
+        text-align: center;
+        color: #94a3b8;
+        background: #fafbff;
+        font-size: 11px;
+      }
+
+      @media (max-width: 520px) {
+        body {
+          padding: 8px;
+        }
+
+        .chat-container {
+          height: 94vh;
+        }
+
+        .header {
+          padding: 18px;
+        }
+
+        .header h1 {
+          font-size: 21px;
+        }
+
+        .message {
+          max-width: 95%;
+        }
+
+        #send-button {
+          padding: 0 14px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <main class="chat-container">
+      <header class="header">
+        <h1>CodeAlpha FAQ Chatbot</h1>
+        <p>Your assistant for common Artificial Intelligence questions</p>
+        <div class="status">● FAQ Assistant Ready</div>
+      </header>
+
+      <section class="suggestions">
+        <p>Try asking about:</p>
+
+        <div class="suggestion-buttons">
+          <button
+            type="button"
+            data-question="What is artificial intelligence?"
+          >
+            Artificial Intelligence
+          </button>
+
+          <button type="button" data-question="What is machine learning?">
+            Machine Learning
+          </button>
+
+          <button type="button" data-question="What is Python?">Python</button>
+
+          <button type="button" data-question="What is deep learning?">
+            Deep Learning
+          </button>
+
+          <button
+            type="button"
+            data-question="What is natural language processing?"
+          >
+            NLP
+          </button>
+        </div>
+      </section>
+
+      <div class="chat-toolbar">
+        <button type="button" id="clear-chat">Clear Chat</button>
+      </div>
+
+      <section id="chat-box" aria-live="polite">
+        <div class="welcome" id="welcome-message">
+          <strong>Welcome!</strong><br />
+          Ask me about AI, machine learning, Python, chatbots, deep learning,
+          and other AI topics.
+        </div>
+      </section>
+
+      <form class="input-area" id="chat-form">
+        <input
+          type="text"
+          id="question"
+          placeholder="Type your question here..."
+          autocomplete="off"
+          aria-label="Your question"
+          required
+        />
+
+        <button type="submit" id="send-button">Send</button>
+      </form>
+
+      <footer class="footer">CodeAlpha Internship Project | FAQ Chatbot</footer>
+    </main>
+
+    <script>
+      const chatBox = document.getElementById("chat-box");
+      const questionInput = document.getElementById("question");
+      const chatForm = document.getElementById("chat-form");
+      const sendButton = document.getElementById("send-button");
+      const clearButton = document.getElementById("clear-chat");
+
+      function showWelcome() {
+        const welcome = document.createElement("div");
+        welcome.id = "welcome-message";
+        welcome.className = "welcome";
+        welcome.innerHTML =
+          "<strong>Welcome!</strong><br>" +
+          "Ask me about AI, machine learning, Python, chatbots, " +
+          "deep learning, and other AI topics.";
+
+        chatBox.appendChild(welcome);
+      }
+
+      function addMessage(sender, message, type) {
+        const messageElement = document.createElement("div");
+        messageElement.className = "message " + type;
+
+        const label = document.createElement("span");
+        label.className = "message-label";
+        label.textContent = sender;
+
+        const content = document.createElement("div");
+        content.textContent = message;
+
+        messageElement.appendChild(label);
+        messageElement.appendChild(content);
+        chatBox.appendChild(messageElement);
+
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }
+
+      async function askQuestion() {
+        const question = questionInput.value.trim();
+
+        if (!question || sendButton.disabled) {
+          return;
+        }
+
+        const welcome = document.getElementById("welcome-message");
+
+        if (welcome) {
+          welcome.remove();
+        }
+
+        addMessage("You", question, "user-message");
+
+        questionInput.value = "";
+        sendButton.disabled = true;
+        sendButton.textContent = "Thinking...";
+
+        try {
+          const response = await fetch("/ask", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ question: question }),
+          });
+
+          if (!response.ok) {
+            throw new Error("Server error");
+          }
+
+          const data = await response.json();
+
+          addMessage(
+            "FAQ Assistant",
+            data.answer || "Sorry, no answer was returned.",
+            "bot-message",
+          );
+        } catch (error) {
+          addMessage(
+            "FAQ Assistant",
+            "Unable to connect. Please check that the Flask server is running.",
+            "bot-message",
+          );
+        } finally {
+          sendButton.disabled = false;
+          sendButton.textContent = "Send";
+          questionInput.focus();
+        }
+      }
+
+      chatForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+        askQuestion();
+      });
+
+      document.querySelectorAll("[data-question]").forEach(function (button) {
+        button.addEventListener("click", function () {
+          questionInput.value = button.dataset.question;
+          askQuestion();
+        });
+      });
+
+      clearButton.addEventListener("click", function () {
+        chatBox.replaceChildren();
+        showWelcome();
+        questionInput.focus();
+      });
+    </script>
+  </body>
+</html>
